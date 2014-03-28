@@ -1,0 +1,26 @@
+{% from 'blog/blog_macro.html' import nav %} 
+<html>
+<head>
+    <link href="/static/css/bootstrap.min.css" media="screen" type="text/css" rel="stylesheet">
+
+    <title>小博客</title>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span2">
+            {{ nav('23', 1) }}
+              
+
+            </div>
+            <div class="span10" >
+              <div class="span1"></div>
+              <div  class="span10 hero-unit">
+                {{blog.html | safe}}
+              </div>
+              <div class="span1"></div>
+            </div>
+       </div>
+    </div>
+</body>

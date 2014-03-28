@@ -1,0 +1,21 @@
+{%macro nav(userId,state)-%}
+  <div class="well span12">
+    <ul class="nav nav-list">
+      <li class="nav-header">帐号管理</li>
+      {% if not userId%}
+      <li id="nav-login-btn"><i class="icon-user"></i><a href="https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=100433877&redirect_uri=gausszh.sinaapp.com/ccps&state={{state}}"><img src="/collect/img/tencent_logo.png"/></a></li>
+      <li >
+        <i class="icon-user"></i>
+          <a href="https://api.weibo.com/oauth2/authorize?client_id=2744979585&response_type=code&redirect_uri=http://gausszh.sinaapp.com/ccps/weibo/login"> 新浪微博登录</a>
+      </li>
+      {% else %} 
+      <li id="nav-user-btn"><a href="/ccps/userinfo"><i class="icon-user"></i>{{ userId }}</a></li>
+      <li id="nav-logout-btn"><a href="/ccps/logout"><i class="icon-off"></i>注销</a></li>
+      <li class="nav-header">快速导航</li>
+      <li id="nav-list-btn"><a href="/blog/edit/"><i class="icon-list-alt"></i>编辑文章</a></li>
+      <li id="nav-edit-btn"><a href="/blog/list/"><i class="icon-file"></i>文章列表</a></li>
+
+      {% endif %}
+    </ul>
+  </div>
+{%- endmacro %}

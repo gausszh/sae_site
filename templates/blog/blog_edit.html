@@ -1,0 +1,86 @@
+{% from 'blog/blog_macro.html' import nav %} 
+<html>
+<head>
+    <link href="/static/css/bootstrap.min.css" media="screen" type="text/css" rel="stylesheet">
+
+	<title>小博客</title>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span2">
+            {{ nav('23', 1) }}
+              <input id="title" class="span12"  type="text" placeholder="文章标题" value="{{blog.title}}">
+              <input id="blog_id" class="span12"  type="hidden" value="{{blog.id}}">
+              
+              <button id="upload" class="btn btn-primary">submit</button>
+
+            </div>
+            <div class="span10" style="height:100%;">
+                <div id="epiceditor" > </div>
+      
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/blog/epiceditor.js"></script>
+<SCRIPT TYPE="text/javascript">
+localStorage.clear();   
+var cssBaseUrl = 'http://'+window.location.host + '/static/css';
+var opts = {
+  container: 'epiceditor',
+  textarea: '',
+  basePath: 'epiceditor',
+  clientSideStorage: true,
+  localStorageName: 'little_blog',
+  useNativeFullscreen: true,
+  parser: marked,
+  file: {
+    name: 'blog_content',
+    defaultContent: 
+    {% if blog %}
+        {{blog.markdown | tojson | safe}}
+    {% else %}
+        ''
+    {% endif %},
+    autoSave: 3000
+  },
+  theme: {
+    base: cssBaseUrl+'/base/epiceditor.css',
+    preview: cssBaseUrl+'/preview/bartik.css',
+    editor: cssBaseUrl+'/editor/epic-dark.css'
+  },
+  button: {
+    preview: true,
+    fullscreen: true,
+    bar: "auto"
+  },
+  focusOnLoad: false,
+  shortcut: {
+    modifier: 18,
+    fullscreen: 70,
+    preview: 80
+  },
+  string: {
+    togglePreview: 'Toggle Preview Mode',
+    toggleEdit: 'Toggle Edit Mode',
+    toggleFullscreen: 'Enter Fullscreen'
+  },
+  autogrow: true
+}
+var editor = new EpicEditor(opts).load();
+</SCRIPT>
+<script src="/static/js/sha1.js"></script><!-- 很快的sha1计算库 -->
+<script src="/static/js/blog/edit.js"></script>
+<script type="text/javascript">
+$(function(){
+    blog.init();
+    $("body").delegate('#upload', 'click', blog.submit);
+});
+
+</script>
+</html>
