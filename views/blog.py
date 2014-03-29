@@ -2,6 +2,7 @@
 
 import datetime
 import urllib
+import markdown
 from flask import Blueprint, request, jsonify, render_template
 
 from sae.storage import Bucket
@@ -14,7 +15,7 @@ bp_blog = Blueprint('blog', __name__, url_prefix='/blog')
 bucket = Bucket(settings.STORAGE_BUCKET_DOMAIN_NAME)
 bucket.put()
 
-@bp_blog.route('/index/')
+@bp_blog.route('/')
 @bp_blog.route('/list/')
 def list():
 	session = create_session()
