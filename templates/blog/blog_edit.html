@@ -29,7 +29,7 @@
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/blog/epiceditor.js"></script>
 <SCRIPT TYPE="text/javascript">
-localStorage.clear();   
+// localStorage.clear();   
 var cssBaseUrl = 'http://'+window.location.host + '/static/css';
 var opts = {
   container: 'epiceditor',
@@ -80,6 +80,8 @@ var editor = new EpicEditor(opts).load();
 $(function(){
     blog.init();
     $("body").delegate('#upload', 'click', blog.submit);
+    $("body").delegate('#epiceditor', 'paste', blog.send_img);
+
 });
 
 </script>

@@ -3,8 +3,8 @@
 import datetime
 import urllib
 import markdown
-from flask import Blueprint, request, jsonify, render_template
-
+from flask import Blueprint, request, jsonify, render_template, make_response
+import flask_login 
 from sae.storage import Bucket
 
 from models.blog import create_session, BlogArticle
@@ -20,11 +20,12 @@ bucket.put()
 def list():
 	session = create_session()
 	blogs = session.query(BlogArticle).filter_by(is_active=1).all()
-	return render_template('blog/blog_list.html', blogs=blogs)
+	return render_template('blog/blog_list.html', blogs=blogs, user=flask_login.current_user)
 
 
 @bp_blog.route('/edit/<int:blog_id>/', methods=['GET', 'POST'])
 @bp_blog.route('/edit/', methods=['GET', 'POST'])
+@flask_login.login_required
 def edit(blog_id=0):
 	if request.method == 'GET':
 		if blog_id == 0:
@@ -88,7 +89,7 @@ def save_file():
 		ret.append({'name': fn, 'link': link})
 	http_files_link = request.form.keys()
 	for fn in http_files_link:
-		http_link = request.form.get('fn')
+		http_link = request.form.get(fn)
 		img_file = urllib.urlopen(http_link)
 		bucket.put_object(fn, img_file)
 		link = bucket.generate_url(fn)

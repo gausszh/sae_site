@@ -4,6 +4,13 @@
 
 	blog.init = function(){
 		localStorage.setItem(IMG_STORAGE, '');
+		if ( $("#blog_id").val().length === 0 ) {
+			$("#blog_id").val(localStorage['blog_id']);
+		}
+		if ( $("#title").val().length === 0 ) {
+			$("#title").val(localStorage['title']);
+		}
+		
 
 	};
 
@@ -26,7 +33,9 @@
 	 * @param  {event} e 
 	 */
 	blog.submit = function(e){
-		blog.send_img();
+		$('#upload').attr('disabled',true);
+		$('#upload').val('发送中。。。');
+		blog.search_img(true);
 		editor.save(true, true);
 		var filename = editor.settings.file.name;
 		var storage = editor.getFiles()[filename];
@@ -41,6 +50,10 @@
 					'markdown': markdown},
 					function(ret, status){
 						$("#blog_id").val(ret.data.blog_id);
+						$('#upload').attr('disabled',false);
+						$('#upload').val('submit');
+						localStorage.setItem('title', title);
+						localStorage.setItem('blog_id', ret.data.blog_id);
 						// storage['blog_id'] = ret.data.blog_id;
 						// var storage = JSON.parse(editor._storage[editor._previewDraftLocation + 
 						// 	editor.settings.localStorageName]);
@@ -62,42 +75,38 @@
 
 	};
 	/**
-	 * 遍历编辑框中的图片，将其发送到服务器上。但是只有图片的src字符超过1w时才有必要上传。
-	 * 我觉得那种很小的图片就算了
-	 * @return {[type]} [description]
+	 * 遍历编辑框中的图片，将其发送到服务器上。
+	 * @param {is_submit} 是否要提交文章了。意味着，如果是则需要将所有未完成上传的都上传一次，且ajax用同步的方式
+	 * @return {type} [description]
 	 */
-	blog.send_img = function(){
-
-		var markdown = editor.exportFile(null, 'text', null);
-
+	blog.search_img = function( is_submit ){
 		var imgs = $('img', $(editor.editor));
 		for (var img_index = 0; img_index < imgs.length; img_index++) {
 			var img = $(imgs[img_index]);
 			var src = img.attr('src');
-			if (src.length < 10000 ){
+
+			//非我的域名的图片都需要转换
+			if (src.startsWith('http://gausszh') || src.startsWith('http://localhost')){
 				continue;
 			}
 
-			//只针对base64编码的图片才上传
-			if (! src.startsWith('data')){
-				continue;
-			}
-
-			var base64_img = src.slice(src.indexOf('base64,') + 7);
-			var st = new Date;
-			var img_sha1 = CryptoJS.SHA1(base64_img).toString();//SHA256(base64_img);
-    		console.log('SHA256: ' + (new Date - st));
+			var img_sha1 = CryptoJS.SHA1(src).toString();//SHA256(base64_img);
 			img.attr('class', img_sha1);
 			var img_storage = blog.img_storage();
 			//正在上传或者已将上传过的则不重复了
-			if ( img_storage[img_sha1] !== undefined ) {
+			if ( img_storage[img_sha1] !== undefined && !is_submit) {
 				continue;
 			}
+			
 			blog.set_img(img_sha1, '');
-		    var img_type = src.slice(src.indexOf('data:') + 5,src.indexOf(';'))
-			var blob_img = blog.str_to_blob(base64_img, img_type);
 			var	form = new FormData();
-			form.append(img_sha1, blob_img);
+			if (src.startsWith('http')){
+				form.append(img_sha1, src)
+			} else {
+		    	var img_type = src.slice(src.indexOf('data:') + 5,src.indexOf(';'))
+				var base64_img = src.slice(src.indexOf('base64,') + 7);
+				form.append(img_sha1, blog.str_to_blob(base64_img, img_type));
+			}
 
 			// 提示用户，目前在上传哦
 			img.hide();
@@ -124,7 +133,7 @@
 				xhrFields: {
 					onprogress: progress_f
 				},
-				async: true,
+				async: !is_submit,
 				success: function(ret,status){
 					if (ret.ok){
 						progress_tag.innerHTML = '';
@@ -144,6 +153,22 @@
 		};
 	};
 	/**
+	 * 复制粘贴图片，chrome
+	 * @param  {event} e 
+	 */
+	blog.send_img = function(e){
+		var clip =  e.clipboardData;
+		var img_blob = clip.items[0].getAsFile();
+		var rd = new FileReader();
+		rd.readAsDataURL(img_blob);
+		console.log(rd.result);
+		// var	form = new FormData();
+
+		// form.append(img_sha1, img_blob)
+
+	}
+
+	/**
 	 * 将字符串装换为Blob类型
 	 * @param  {string} str [需要被装换的字符串]
 	 * @param  {string} type [生成的Blob数据的 类型,比如 image/png]
@@ -161,7 +186,7 @@
 		return blob_file;
 
 	}
-	window.setInterval(blog.send_img, editor.settings.file.autoSave);
+	window.setInterval(blog.search_img, editor.settings.file.autoSave);
 	window.blog = blog;
 
 })(window)
