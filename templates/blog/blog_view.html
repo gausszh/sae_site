@@ -2,6 +2,7 @@
 <html>
 <head>
     <link href="/static/css/bootstrap.min.css" media="screen" type="text/css" rel="stylesheet">
+    <link href="/static/css/blog/code_hilite.css" media="screen" type="text/css" rel="stylesheet">
 
     <title>小博客</title>
 </head>
@@ -14,13 +15,14 @@
               
 
             </div>
-            <div class="span10" >
-              <div class="span1"></div>
-              <div  class="span10 hero-unit">
-                {{blog.html | safe}}
-              </div>
-              <div class="span1"></div>
+            <div  class="span1"></div>
+            <div class="span7" >
+              {{blog.markdown| safe}}
             </div>
+            <div  class="span2">
+                
+            </div>
+            
        </div>
     </div>
 </body>
