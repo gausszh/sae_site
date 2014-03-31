@@ -1045,12 +1045,11 @@
         //     content = e.clipboardData.getData(e.clipboardData.types[0]);
         //     self.editorIframeDocument.execCommand("insertText", false, content);
         // }
-        console.log(this);
-        var clip =  e.clipboardData;
-        var img_blob = clip.items[0].getAsFile();
-        var rd = new FileReader();
-        rd.readAsDataURL(img_blob);
-        console.log(rd.result);
+        // var clip =  e.clipboardData;
+        // var img_blob = clip.items[0].getAsFile();
+        // var rd = new FileReader();
+        // rd.readAsDataURL(img_blob);
+        // console.log(rd.result);
         return true;
       }
       else if (window.clipboardData) {

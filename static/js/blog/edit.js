@@ -86,7 +86,7 @@
 			var src = img.attr('src');
 
 			//非我的域名的图片都需要转换
-			if (src.startsWith('http://gausszh') || src.startsWith('http://localhost')){
+			if (src.indexOf('http://gausszh') === 0 || src.indexOf('http://localhost') === 0){
 				continue;
 			}
 
@@ -95,12 +95,15 @@
 			var img_storage = blog.img_storage();
 			//正在上传或者已将上传过的则不重复了
 			if ( img_storage[img_sha1] !== undefined && !is_submit) {
+				if ( img_storage[img_sha1].length > 0) {
+					img.attr('src', img_storage[img_sha1]);
+				}
 				continue;
 			}
 			
 			blog.set_img(img_sha1, '');
 			var	form = new FormData();
-			if (src.startsWith('http')){
+			if (src.indexOf('http') === 0){
 				form.append(img_sha1, src)
 			} else {
 		    	var img_type = src.slice(src.indexOf('data:') + 5,src.indexOf(';'))
@@ -157,23 +160,32 @@
 	 * @param  {event} e 
 	 */
 	blog.send_img = function(e){
-		var clip =  e.clipboardData;
-		var img_blob = clip.items[0].getAsFile();
-		var rd = new FileReader();
-		rd.readAsDataURL(img_blob);
-		console.log(rd.result);
+		var clip =  e.originalEvent.clipboardData || e.clipboardData;
+		var items = clip.items;
+		if ( items ) {
+			var img_blob = items[0].getAsFile();
+			var rd = new FileReader();
+			rd.onload = function ( e ) {
+				var base64_img = rd.result;
+				editor.editorIframeDocument.execCommand("insertHTML",false,'<img src="' + base64_img + '">');
+			}
+			rd.readAsDataURL(img_blob);
+
+			e.preventDefault();
+		}
 		// var	form = new FormData();
 
 		// form.append(img_sha1, img_blob)
 
 	}
 
+  	$(editor.editor).bind('paste', blog.send_img);
 	/**
 	 * 将字符串装换为Blob类型
 	 * @param  {string} str [需要被装换的字符串]
 	 * @param  {string} type [生成的Blob数据的 类型,比如 image/png]
 	 * @return {Blob}     [装换后的Blob 类型数据]
-	 */
+	 (*/
 	blog.str_to_blob = function (str, type) {
 		var	bin_str = atob(str);
 		var	array = new Uint8Array(new ArrayBuffer(bin_str.length));
