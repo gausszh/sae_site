@@ -1,10 +1,12 @@
 #coding=utf8
 
+import datetime
+
 from flask import request
+import flask_login
 
 from models.base import User, create_session
 from utils import user_cache
-import flask_login
 
 def AnonymousUserMixin():
     '''
@@ -17,6 +19,7 @@ def AnonymousUserMixin():
     user.open_id = 'anonymous%s' % anonymouser_id
     user.name = u'游客%s' % anonymouser_id
     user.token = ''
+    user.create_time = datetime.datetime.now()
     session.add(user)
     session.commit()
     user_cache.incr_anonymous_count()

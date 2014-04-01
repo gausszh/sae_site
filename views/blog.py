@@ -20,6 +20,7 @@ bucket.put()
 def list():
 	session = create_session()
 	blogs = session.query(BlogArticle).filter_by(is_active=1).all()
+	session.close()
 	return render_template('blog/blog_list.html', blogs=blogs, user=flask_login.current_user)
 
 
