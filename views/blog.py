@@ -3,7 +3,7 @@
 import datetime
 import urllib
 import markdown
-from flask import Blueprint, request, jsonify, render_template, make_response
+from flask import Blueprint, request, jsonify, render_template, make_response, g
 import flask_login 
 from sae.storage import Bucket
 
@@ -19,9 +19,9 @@ bucket.put()
 @bp_blog.route('/list/')
 def list():
 	session = create_session()
-	blogs = session.query(BlogArticle).filter_by(is_active=1).all()
+	blogs = session.query(BlogArticle).filter_by(is_active=1).order_by(BlogArticle.update_time.desc()).all()
 	session.close()
-	return render_template('blog/blog_list.html', blogs=blogs, user=flask_login.current_user)
+	return render_template('blog/blog_list.html', blogs=blogs)
 
 
 @bp_blog.route('/edit/<int:blog_id>/', methods=['GET', 'POST'])

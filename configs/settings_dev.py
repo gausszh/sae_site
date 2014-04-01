@@ -20,3 +20,11 @@ else:
 	# DB_SAE_URI = 'sqlite:////database.db'
 	DB_POOL_RECYCLE_TIMEOUT = 10
 	DB_ECHO = True
+
+# cache
+CACHE_TIMEOUT = 3
+
+# app
+API_KEY = '***'
+API_SECRET = '****'
+REDIRECT_URI = 'http://****'

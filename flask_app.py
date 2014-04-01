@@ -2,35 +2,43 @@
 # coding=utf8
 
 
-from flask import Flask
-from flask_login import LoginManager
+from flask import Flask, render_template, redirect, g
+import flask_login
 
 from configs import settings
 from utils.filters import JINJA2_FILTERS
 from utils import user_cache, AnonymousUserMixin
 from models.base import User
-from views.blog import bp_blog
+from views import blog, base
 
 def create_app(debug=settings.DEBUG):
     app = Flask(__name__)
-    app.register_blueprint(bp_blog)
+    app.register_blueprint(blog.bp_blog)
+    app.register_blueprint(base.bp_base)
     app.jinja_env.filters.update(JINJA2_FILTERS)
     app.debug = debug
     app.secret_key = "gausszh"
 
-    login_manager = LoginManager()
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    @app.before_request
+    def check_user():
+        g.user = flask_login.current_user
+
+    login_manager = flask_login.LoginManager()
     login_manager.setup_app(app)
 
     @login_manager.user_loader
     def load_user(userid):
-        d = user_cache.get_user(str(userid))
-        user = User() 
-        for k in d:
-            setattr(user, k, d.get(k))
+        user = user_cache.get_user(userid, format='object')
         return user
 
+    login_manager.unauthorized = blog.list
+    # login_manager.anonymous_user = AnonymousUserMixin
 
-    login_manager.anonymous_user = AnonymousUserMixin
+
 
     return app
 
