@@ -72,6 +72,9 @@ var opts = {
   },
   autogrow: true
 }
+{% if blog %}
+localStorage.clear()
+{% endif %}
 var editor = new EpicEditor(opts).load();
 </SCRIPT>
 <script src="/static/js/sha1.js"></script><!-- 很快的sha1计算库 -->

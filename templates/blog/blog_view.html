@@ -6,12 +6,20 @@
 
     <title>小博客</title>
 </head>
+<style type="text/css">
+.toc {
+    float: right;
+    position: absolute;
+    right: 0px;
+}
+
+</style>
 <body>
 
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span2">
-            {{ nav('23', 1) }}
+            {{ nav(g.user.name, 1) }}
               
 
             </div>

@@ -980,7 +980,7 @@
     function shortcutHandler(e) {
       if (e.keyCode == 9){// tab
         e.preventDefault();
-        self.editorIframeDocument.execCommand("insertText", false, '\t');
+        self.editorIframeDocument.execCommand("insertText", false, '    ');
       }
 
       if (e.keyCode == self.settings.shortcut.modifier) { isMod = true } // check for modifier press(default is alt key), save to var

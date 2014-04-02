@@ -161,6 +161,9 @@
 	 */
 	blog.send_img = function(e){
 		var clip =  e.originalEvent.clipboardData || e.clipboardData;
+		if ( !/image/.test(clip.types[0])) {
+			return true;
+		}
 		var items = clip.items;
 		if ( items ) {
 			var img_blob = items[0].getAsFile();
