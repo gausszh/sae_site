@@ -1,7 +1,7 @@
 # coding=utf8
 
 try:
-    import simplejson as josn
+    import simplejson as json
 except Exception:
     import json
 import datetime
