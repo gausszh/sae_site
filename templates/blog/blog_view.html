@@ -25,7 +25,9 @@
             </div>
             <div  class="span1"></div>
             <div class="span7" >
-              {{blog.markdown|md2html| safe}}
+                {% if blog %}
+                    {{blog.markdown|md2html| safe}}
+                {% endif %}
             </div>
             <div  class="span2">
                 

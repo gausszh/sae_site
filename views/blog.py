@@ -1,4 +1,4 @@
-#coding=utf8
+# coding=utf8
 
 import datetime
 import urllib
@@ -19,7 +19,8 @@ bucket.put()
 @bp_blog.route('/list/')
 def list():
     session = create_session()
-    blogs = session.query(BlogArticle).filter_by(is_active=1).order_by(BlogArticle.update_time.desc()).all()
+    blogs = session.query(BlogArticle).filter_by(is_active=1)\
+        .order_by(BlogArticle.update_time.desc()).all()
     session.close()
     return render_template('blog/blog_list.html', blogs=blogs)
 
@@ -40,12 +41,10 @@ def edit(blog_id=0):
     if request.method == 'POST':
         form = request.form
         markdown = form.get('markdown')
-        html = form.get('html')
         title = form.get('title')
         blog_id = form.get('blog_id')
-        if markdown and html and title and \
-                (len(markdown.strip()) * len(markdown.strip()) * len(markdown.strip()) > 0):
-
+        if markdown and title and (len(markdown.strip()) * 
+                                   len(title.strip()) > 0):
             session = create_session()
             now = datetime.datetime.now()
             # blog_id belong to this user
@@ -53,13 +52,12 @@ def edit(blog_id=0):
                 blog = session.query(BlogArticle).filter_by(id=blog_id).first()
             if not blog_id or not blog:
                 blog = BlogArticle()
-                blog.create_by = 'gausszh'
+                blog.create_by = flask_login.current_user.id
                 blog.create_time = now
 
             blog.update_time = now
             blog.title = title
             blog.markdown = markdown
-            blog.html = html
             session.add(blog)
             session.commit()
             blog_id = blog.id
@@ -84,7 +82,7 @@ def save_file():
     files_name = request.files.keys()
     ret = []
     for fn in files_name:
-        #暂未做安全校验 PIL
+        # 暂未做安全校验 PIL
         img_file = request.files.get(fn)
         bucket.put_object(fn, img_file)
         link = bucket.generate_url(fn)
@@ -98,7 +96,7 @@ def save_file():
         ret.append({'name': fn, 'link': link})
     return jsonify(ok=True, data=ret)
 
-        
+
 @bp_blog.route('/test/')
 def test():
     return render_template('%s.html' % request.args.get('p'))

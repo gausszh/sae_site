@@ -38,30 +38,27 @@
 		blog.search_img(true);
 		editor.save(true, true);
 		var filename = editor.settings.file.name;
-		var storage = editor.getFiles()[filename];
-		var markdown = storage.content.trim();
-		var html = editor.exportFile(null, 'html', true).trim();
+		var markdown = editor.exportFile(filename,'text',true)
 		var title = $("#title").val().trim();
-		if (title.length * html.length * markdown.length > 0){
+		if (title.length * markdown.length > 0){
 			$.post('/blog/edit/', {
 					'blog_id': $("#blog_id").val(),
 					'title': title,
-					'html': html, 
 					'markdown': markdown},
 					function(ret, status){
 						$("#blog_id").val(ret.data.blog_id);
 						$('#upload').attr('disabled',false);
 						$('#upload').val('submit');
-						localStorage.setItem('title', title);
-						localStorage.setItem('blog_id', ret.data.blog_id);
-						// storage['blog_id'] = ret.data.blog_id;
+						// localStorage.setItem('title', title);
+						// localStorage.setItem('blog_id', ret.data.blog_id);
 						// var storage = JSON.parse(editor._storage[editor._previewDraftLocation + 
 						// 	editor.settings.localStorageName]);
 						
 						// storage[filename] = editor._defaultFileSchema();
 
 						// editor._storage[editor._previewDraftLocation + editor.settings.localStorageName] = 
-						// 	editor._storage[editor.settings.localStorageName] = JSON.stringify(storage);
+						// 	editor._storage[editor.settings.localStorageName] = 
+						// 		JSON.stringify({filename: editor._defaultFileSchema()});
 						// editor.open();
 						// $("#title").val('');
 						// $("#blog_id").val('');
@@ -69,6 +66,8 @@
 					},
 					'json');
 		}else{
+			$('#upload').attr('disabled',false);
+			$('#upload').val('submit');
 			alert('数据不完整');
 			return false;
 		}
@@ -201,7 +200,47 @@
 		return blob_file;
 
 	}
+
+	blog.upload_temp_blog = function () {
+		var imgs = blog.img_storage();
+		var keys = Object.keys(imgs);
+		for (var i = 0; i < keys.length; i++) {
+			if ( imgs[keys[i]] == '' or imgs[keys[i]] == undefined ) {
+				return false;
+			}
+		}
+		var filename = editor.settings.file.name;
+		var markdown = editor.exportFile(filename,'text',true)
+		var title = $("#title").val().trim();
+		$.post('/blog/edit/', {
+				'blog_id': $("#blog_id").val(),
+				'title': title,
+				'markdown': markdown},
+				function(ret, status){
+					$("#blog_id").val(ret.data.blog_id);
+					$('#upload').attr('disabled',false);
+					$('#upload').val('submit');
+					// localStorage.setItem('title', title);
+					// localStorage.setItem('blog_id', ret.data.blog_id);
+					// var storage = JSON.parse(editor._storage[editor._previewDraftLocation + 
+					// 	editor.settings.localStorageName]);
+					
+					// storage[filename] = editor._defaultFileSchema();
+
+					// editor._storage[editor._previewDraftLocation + editor.settings.localStorageName] = 
+					// 	editor._storage[editor.settings.localStorageName] = 
+					// 		JSON.stringify({filename: editor._defaultFileSchema()});
+					// editor.open();
+					// $("#title").val('');
+					// $("#blog_id").val('');
+					alert('提交成功');
+				},
+				'json');
+	}
+	//定期扫描编辑区的图片
 	window.setInterval(blog.search_img, editor.settings.file.autoSave);
+	//定期将编辑的内容保存到服务器草稿中
+	window.setInterval(blog.upload_temp_blog, editor.settings.file.autoSave);
 	window.blog = blog;
 
 })(window)
