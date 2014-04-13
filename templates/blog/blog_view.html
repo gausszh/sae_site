@@ -28,6 +28,10 @@
                 {% if blog %}
                     {{blog.markdown|md2html| safe}}
                 {% endif %}
+                <!-- UY BEGIN -->
+                <div id="uyan_frame"></div>
+                <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js"></script>
+                <!-- UY END -->
             </div>
             <div  class="span2">
                 
@@ -35,4 +39,6 @@
             
        </div>
     </div>
+
 </body>
+</html>
