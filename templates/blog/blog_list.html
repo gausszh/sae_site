@@ -2,6 +2,7 @@
 <html>
 <head>
     <link href="/static/css/bootstrap.min.css" media="screen" type="text/css" rel="stylesheet">
+    <link href="/static/css/blog/main.css" media="screen" type="text/css" rel="stylesheet">
     <meta property="qc:admins" content="0152256455332063161100637572477" />
     <title>小博客</title>
 </head>
@@ -27,20 +28,27 @@
                     </thead>
                     <tbody>
                     {% for blog in blogs %}
+                        {% if blog.is_active or blog.create_by == g.user.id %}
                         <tr >
 
                             <td>{{loop.index}}</td>
                             <td><a href="/blog/view/{{blog.id}}/" > {{blog.title}}</a></td>
                             <td>{{blog.update_time}}</td>
                             <td>
-                            {% if blog.is_active == 1: %}
-                                生效 
+                            {% if blog.is_active == 1 %}
+                                生效
                             {% else %} 
                                 草稿
                             {% endif %}
                             </td>
-                            <td><a href="/blog/edit/{{blog.id}}/" ><button class="btn btn-info" blog_id="{{blog.id}}"><i class="icon-edit"></i></button></a></td>
+                            {% if blog.create_by == g.user.id  %}
+                                <td><a href="/blog/edit/{{blog.id}}/" ><button class="btn btn-info" blog_id="{{blog.id}}"><i class="icon-edit"></i></button></a></td>
+                                {% if blog.is_active == 1 %}
+                                <td><a href="#" ><button class="btn btn-danger" blog_id="{{blog.id}}"><i class="icon-trash"></i></button></a></td>
+                                {% endif %}
+                            {% endif %}
                         </tr>
+                        {% endif %}
                       {% endfor %}
                     </tbody>
                 </table>
@@ -49,3 +57,20 @@
         </div>
     </div>
 </body>
+<script src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+$(function(){
+    $("a").delegate('.btn-danger', 'click', function(e){
+        $.post(
+            '/blog/delete/'+ $(this).attr('blog_id') +'/',
+            {},
+            function(ret, status){
+                console.log(ret);
+            }
+        );
+    });
+
+
+});
+</script>
+</html>

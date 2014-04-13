@@ -205,12 +205,17 @@
 		var imgs = blog.img_storage();
 		var keys = Object.keys(imgs);
 		for (var i = 0; i < keys.length; i++) {
-			if ( imgs[keys[i]] == '' or imgs[keys[i]] == undefined ) {
+			if ( imgs[keys[i]] == '' || imgs[keys[i]] == undefined ) {
 				return false;
 			}
 		}
 		var filename = editor.settings.file.name;
 		var markdown = editor.exportFile(filename,'text',true)
+		var md_sha1 = CryptoJS.SHA1(markdown).toString();
+		if ( localStorage.markdown === md_sha1) {
+			return false
+		}
+		localStorage.markdown = md_sha1;
 		var title = $("#title").val().trim();
 		$.post('/blog/edit/', {
 				'blog_id': $("#blog_id").val(),
@@ -233,7 +238,7 @@
 					// editor.open();
 					// $("#title").val('');
 					// $("#blog_id").val('');
-					alert('提交成功');
+					// alert('提交成功');
 				},
 				'json');
 	}

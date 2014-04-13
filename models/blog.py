@@ -28,7 +28,7 @@ class BlogArticle(Base):
     title = Column(String(50))
     markdown = Column(Text)
     html = Column(Text)
-    create_by = Column(String(30), index=True, nullable=False)
+    create_by = Column(Integer, index=True, nullable=False)
     create_time = Column(DateTime, nullable=False)
     update_time = Column(DateTime, index=True, nullable=False,)
     is_active = Column(Integer, nullable=False, default=1)

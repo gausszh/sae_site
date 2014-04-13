@@ -2,19 +2,20 @@
 # coding=utf8
 
 
-from flask import Flask, render_template, redirect, g
+from flask import Flask, render_template, g
 import flask_login
 
 from configs import settings
 from utils.filters import JINJA2_FILTERS
-from utils import user_cache, AnonymousUserMixin
-from models.base import User
-from views import blog, base
+from utils import user_cache
+from views import blog, base, security
+
 
 def create_app(debug=settings.DEBUG):
     app = Flask(__name__)
     app.register_blueprint(blog.bp_blog)
     app.register_blueprint(base.bp_base)
+    app.register_blueprint(security.bp_security)
     app.jinja_env.filters.update(JINJA2_FILTERS)
     app.debug = debug
     app.secret_key = "gausszh"
@@ -38,13 +39,9 @@ def create_app(debug=settings.DEBUG):
     login_manager.unauthorized = blog.list
     # login_manager.anonymous_user = AnonymousUserMixin
 
-
-
     return app
 
 app = create_app(settings.DEBUG)
-
-
 
 
 if __name__ == '__main__':
