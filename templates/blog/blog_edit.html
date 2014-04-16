@@ -16,9 +16,12 @@
               <input id="blog_id" class="span12"  type="hidden" value="{{blog.id}}">
               
               <button id="upload" class="btn btn-primary">submit</button>
-
+              <div id="message" class="alert" style="display:none">
+                    保存成功
+              </div>
             </div>
             <div class="span10" style="height:100%;">
+                
                 <div id="epiceditor" > </div>
       
             </div>
@@ -29,6 +32,7 @@
 </body>
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/blog/epiceditor.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
 <SCRIPT TYPE="text/javascript">
 localStorage.clear();   
 var cssBaseUrl = 'http://'+window.location.host + '/static/css';

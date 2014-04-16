@@ -2,7 +2,7 @@
 
 import datetime
 import urllib
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, g
 import flask_login
 from sae.storage import Bucket
 
@@ -19,10 +19,24 @@ bucket.put()
 @bp_blog.route('/list/')
 def list():
     session = create_session()
-    blogs = session.query(BlogArticle).filter_by(is_active=1)\
-        .order_by(BlogArticle.update_time.desc()).all()
+    blogs = session.query(BlogArticle).order_by(BlogArticle.update_time.desc())\
+        .all()
     session.close()
     return render_template('blog/blog_list.html', blogs=blogs)
+
+
+@bp_blog.route('/delete/<int:blog_id>/', methods=['POST'])
+@flask_login.login_required
+def delete(blog_id):
+    session = create_session()
+    blog = session.query(BlogArticle).filter_by(id=blog_id).first()
+    if blog.create_by == g.user.id:
+        blog.is_active = 0
+        session.commit()
+        session.close()
+        return jsonify(ok=True, data={'blog_id': blog_id})
+    session.close()
+    return jsonify(ok=False, reason=u'数据错误')
 
 
 @bp_blog.route('/edit/<int:blog_id>/', methods=['GET', 'POST'])
@@ -55,7 +69,7 @@ def edit(blog_id=0):
                 blog = BlogArticle()
                 blog.create_by = flask_login.current_user.id
                 blog.create_time = now
-
+            blog.is_active = 1
             blog.update_time = now
             blog.title = title
             blog.markdown = markdown
@@ -98,6 +112,3 @@ def save_file():
     return jsonify(ok=True, data=ret)
 
 
-@bp_blog.route('/test/')
-def test():
-    return render_template('%s.html' % request.args.get('p'))

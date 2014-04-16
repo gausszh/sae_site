@@ -62,7 +62,8 @@
 						// editor.open();
 						// $("#title").val('');
 						// $("#blog_id").val('');
-						alert('提交成功');
+						$("#message").show();
+						setTimeout(function(){ $("#message").hide();}, 2000);
 					},
 					'json');
 		}else{

@@ -65,7 +65,7 @@ $(function(){
             '/blog/delete/'+ $(this).attr('blog_id') +'/',
             {},
             function(ret, status){
-                console.log(ret);
+                location.reload();
             }
         );
     });
