@@ -218,30 +218,18 @@
 		}
 		localStorage.markdown = md_sha1;
 		var title = $("#title").val().trim();
-		$.post('/blog/edit/', {
-				'blog_id': $("#blog_id").val(),
-				'title': title,
-				'markdown': markdown},
-				function(ret, status){
-					$("#blog_id").val(ret.data.blog_id);
-					$('#upload').attr('disabled',false);
-					$('#upload').val('submit');
-					// localStorage.setItem('title', title);
-					// localStorage.setItem('blog_id', ret.data.blog_id);
-					// var storage = JSON.parse(editor._storage[editor._previewDraftLocation + 
-					// 	editor.settings.localStorageName]);
-					
-					// storage[filename] = editor._defaultFileSchema();
-
-					// editor._storage[editor._previewDraftLocation + editor.settings.localStorageName] = 
-					// 	editor._storage[editor.settings.localStorageName] = 
-					// 		JSON.stringify({filename: editor._defaultFileSchema()});
-					// editor.open();
-					// $("#title").val('');
-					// $("#blog_id").val('');
-					// alert('提交成功');
-				},
-				'json');
+		if (title.length * markdown.length > 0){
+			$.post('/blog/edit/', {
+					'blog_id': $("#blog_id").val(),
+					'title': title,
+					'markdown': markdown},
+					function(ret, status){
+						$("#blog_id").val(ret.data.blog_id);
+						$('#upload').attr('disabled',false);
+						$('#upload').val('submit');
+					},
+					'json');
+		}
 	}
 	//定期扫描编辑区的图片
 	window.setInterval(blog.search_img, editor.settings.file.autoSave);
