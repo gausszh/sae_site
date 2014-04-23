@@ -7,6 +7,7 @@ import flask_login
 from sae.storage import Bucket
 
 from models.blog import create_session, BlogArticle
+from utils.blog_cache import set_draft_blog
 from configs import settings
 
 
@@ -37,6 +38,18 @@ def delete(blog_id):
         return jsonify(ok=True, data={'blog_id': blog_id})
     session.close()
     return jsonify(ok=False, reason=u'数据错误')
+
+
+@bp_blog.route('/draft/', methods=['POST'])
+@flask_login.login_required
+def draft():
+    """
+    保存未上传的文章为草稿
+    """
+    form = request.form
+    markdown = form.get('markdown', '')
+    set_draft_blog(flask_login.current_user.id, markdown)
+    return jsonify(ok=True)
 
 
 @bp_blog.route('/edit/<int:blog_id>/', methods=['GET', 'POST'])
@@ -90,6 +103,7 @@ def view_blog(blog_id):
 
 
 @bp_blog.route('/files/', methods=['POST'])
+@flask_login.login_required
 def save_file():
     """
     存储上传的图片
