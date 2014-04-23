@@ -9,9 +9,11 @@ from sqlalchemy.sql import or_
 from models.base import create_session, User
 from models.blog import BlogArticle
 from configs import settings
-import sae.kvdb
+# import sae.kvdb
+import pylibmc
 
-_cache = sae.kvdb.KVClient()
+
+_cache = pylibmc.Client()
 APP = "base"
 
 
