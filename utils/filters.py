@@ -10,7 +10,7 @@ def md2html(md):
     @param {unicode} md
     @return {unicode html}
     """
-    return markdown.markdown(md, ['extra', 'codehilite', 'toc'], safe_mode="escape")
+    return markdown.markdown(md, ['extra', 'codehilite', 'toc', 'nl2br'], safe_mode="escape")
 
 
 JINJA2_FILTERS = {
