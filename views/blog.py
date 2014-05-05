@@ -97,7 +97,10 @@ def edit(blog_id=0):
 @bp_blog.route('/view/<int:blog_id>/')
 def view_blog(blog_id):
     session = create_session()
-    blog = session.query(BlogArticle).filter_by(id=blog_id).first()
+    query = session.query(BlogArticle).filter_by(id=blog_id)
+    if not flask_login.current_user.is_active():
+        query = query.filter_by(is_active=1)
+    blog = query.first()
     session.close()
     return render_template('blog/blog_view.html', blog=blog)
 
