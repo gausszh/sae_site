@@ -213,8 +213,11 @@
 		var filename = editor.settings.file.name;
 		var markdown = editor.exportFile(filename,'text',true)
 		var md_sha1 = CryptoJS.SHA1(markdown).toString();
+		if (localStorage.markdown === undefined) {
+			localStorage.markdown = md_sha1;
+		}
 		if ( localStorage.markdown === md_sha1) {
-			return false
+			return false;
 		}
 		localStorage.markdown = md_sha1;
 		var title = $("#title").val().trim();
