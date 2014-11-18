@@ -22,6 +22,9 @@ else:
 	DB_ECHO = True
 
 # cache
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = 6379
+REDIS_DB = 1
 CACHE_TIMEOUT = 3
 
 # app

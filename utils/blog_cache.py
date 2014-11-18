@@ -1,12 +1,12 @@
 # coding=utf8
-import pylibmc
-
 from configs import settings
+from utils import redis_connection
 
-_cache = pylibmc.Client()
+
 APP = "blog"
 
 
 def set_draft_blog(uid, markdown):
+    _cache = redis_connection()
     key = str("%s:draft:blog:%s" % (APP, uid))
-    _cache.set(key, markdown, time=settings.DRAFT_BLOG_TIMEOUT)
+    _cache.set(key, markdown, settings.DRAFT_BLOG_TIMEOUT)

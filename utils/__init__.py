@@ -1,12 +1,14 @@
 #coding=utf8
 
 import datetime
+import redis
 
-from flask import request
 import flask_login
 
 from models.base import User, create_session
 from utils import user_cache
+from configs import settings
+
 
 def AnonymousUserMixin():
     '''
@@ -27,4 +29,10 @@ def AnonymousUserMixin():
     session.close()
     return user
 
+redis_pool = redis.ConnectionPool(host=settings.REDIS_IP, 
+                                  port=settings.REDIS_PORT, 
+                                  db=settings.REDIS_DB)
 
+
+def redis_connection():
+    return redis.Redis(connection_pool=redis_pool)

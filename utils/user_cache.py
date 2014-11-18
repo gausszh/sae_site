@@ -6,18 +6,18 @@ except Exception:
     import json
 import datetime
 from sqlalchemy.sql import or_
+
 from models.base import create_session, User
 from models.blog import BlogArticle
 from configs import settings
+from utils import redis_connection
 # import sae.kvdb
-import pylibmc
 
-
-_cache = pylibmc.Client()
 APP = "base"
 
 
 def get_user(uid, format="json"):
+    _cache = redis_connection()
     key = str("%s:user:%s" % (APP, uid))
     userinfo = _cache.get(key)
     new = False
@@ -26,7 +26,7 @@ def get_user(uid, format="json"):
         userinfo = session.query(User).filter(or_(User.id == uid,
                                                   User.open_id == uid)).first()
         userinfo = orm2json(userinfo)
-        _cache.set(key, json.dumps(userinfo), time=settings.CACHE_TIMEOUT)
+        _cache.set(key, json.dumps(userinfo), settings.CACHE_TIMEOUT)
         new = True
         session.close()
     if not new:
@@ -41,32 +41,36 @@ def get_user(uid, format="json"):
 
 
 def delete_user(uid):
+    _cache = redis_connection()
     key = str("%s:user:%s" % (APP, uid))
     _cache.delete(key)
 
 
 def get_anonymous_count():
+    _cache = redis_connection()
     key = "%s:anonymous:count" % APP
     count = _cache.get(key)
     if not count:
         session = create_session()
-        count = session.query(User).filter(User.open_id.startswith("anonymous"))\
-            .count()
-        _cache.set(key, count, time=settings.CACHE_TIMEOUT)
+        count = session.query(User).filter(
+            User.open_id.startswith("anonymous")).count()
+        _cache.set(key, count, settings.CACHE_TIMEOUT)
         session.close()
     return int(count)
 
 
 def incr_anonymous_count():
+    _cache = redis_connection()
     key = "%s:anonymous:count" % APP
     count = get_anonymous_count()
-    _cache.set(key, count + 1, time=settings.CACHE_TIMEOUT)
+    _cache.set(key, count + 1, settings.CACHE_TIMEOUT)
 
 
 def get_blog(blog_id):
     """
     获取博客的数据
     """
+    _cache = redis_connection()
     key = str("%s:blog:%s" % (APP, blog_id))
     bloginfo = _cache.get(key)
     new = False
@@ -74,7 +78,7 @@ def get_blog(blog_id):
         session = create_session()
         bloginfo = session.query(BlogArticle).filter_by(id=blog_id).first()
         bloginfo = orm2json(bloginfo)
-        _cache.set(key, json.dumps(bloginfo), time=settings.CACHE_TIMEOUT)
+        _cache.set(key, json.dumps(bloginfo), settings.CACHE_TIMEOUT)
         new = True
         session.close()
     if not new:
@@ -83,6 +87,7 @@ def get_blog(blog_id):
 
 
 def delete_blog(blog_id):
+    _cache = redis_connection()
     key = str("%s:blog:%s" % (APP, blog_id))
     _cache.delete(key)
 
